@@ -5,10 +5,10 @@
 class comparer
 {
 private:
-    int size;
-    char *grid;
-    int *array;
-    int comparisons;
+    int size;//number of numbers being compared
+    char *grid;//grid of comparisons that have been done
+    int *array;//array of numbers being compared
+    int comparisons;//number of comparisons done
     void shuffle(void)
     {
         for(int i = size; i > 0;i--)
@@ -91,16 +91,7 @@ private:
         return returnChar;
     }
 
-    void compareOneToAll(int index)
-    {
-        for(int i = 0; i <this->size; i++)
-        {
-            if(i!=index)
-            {
-                this->compareIndex(index, i);
-            }
-        }
-    }
+
     void setArrays(void)
     {
         for (int i = 0; i < size;i++)//set both arrays states
@@ -118,6 +109,16 @@ private:
                 }
             }
         }
+    }
+
+    bool isUncompared(int i1,int i2)
+    {
+        bool uncompared = true;
+        if(this->grid[i1*this->size + i2] != '\0')
+        {
+            uncompared=false;
+        }
+        return uncompared;
     }
 public:
     
@@ -191,14 +192,32 @@ public:
         }
         return allCompared;
     }
-    
+    void compareOneToAll(int index)
+    {
+        for(int i = 0; i <this->size; i++)
+        {
+            if(i!=index && this->isUncompared(index,i))
+            {
+                this->compareIndex(index, i);
+            }
+        }
+    }
+    void bruteForce(void)//for every number compare it to all other uncompared numbers
+    {
+        for(int i = 0; i < this->size; i++)
+        {
+            this->compareOneToAll(i);
+        }
+    }
 };
 int main(void)
 {
     srand(time(NULL));
 
     comparer cme;
-    cme.compareIndex(0,3);
+    cme.bruteForce();
+
+    //cme.compareIndex(0,3);
     cme.printArray();
     cme.printGrid();
     std::cout << cme.getComparisons();
