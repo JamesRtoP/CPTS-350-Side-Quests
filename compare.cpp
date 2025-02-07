@@ -2,71 +2,6 @@
 #include <iostream>
 #include <ctime>
 
-
-
-// void shuffle(int* pArr, int const size)
-// {
-//     for(int i = size; i > 0;i--)
-//     {
-//         int swapIndex = rand() % i;
-//         int temp = pArr[swapIndex];
-//         pArr[swapIndex] = pArr[i-1];
-//         pArr[i-1] = temp;
-//     }
-// }
-
-// void printArray(int* arr, int size)
-// {
-//     for(int i = 0; i<size; i++)
-//     {
-//         std::cout << arr[i] << ",";
-//     }
-//     std::cout << std::endl;
-// }
-
-// std::string getDisplayString(char key, int i, int j)
-// {
-//     std::string returnMe;
-//     switch(key)
-//     {
-//     case '\0':
-//     {
-//         returnMe = "  X  ";
-//         break;
-//     }
-//     case '<':
-//     {
-//         returnMe = "a" + std::to_string(i) + "<" + "a" + std::to_string(j);
-//         break;
-//     }
-//     case '>':
-//     {
-//         returnMe = "a" + std::to_string(i) + ">" + "a" + std::to_string(j);
-//         break;
-//     }
-//     }
-//     return returnMe;
-// }
-
-// void printGrid (char* grid, int size)
-// {
-//     for (int i = 0; i < size;i++)
-//     {
-//         std::cout <<"|";
-//         for(int j = 0; j < size; j++)
-//         {
-            
-//             std::cout << getDisplayString(grid[i*size+j],i,j);
-//             std::cout << "|";
-//         }
-//         std::cout << std::endl;
-//     }
-// }
-
-// void compare(char*grid, int* orderMe,int comparisons)
-// {
-
-// }
 class comparer
 {
 private:
@@ -103,6 +38,11 @@ private:
         case '>':
         {
             returnMe = "a" + std::to_string(i) + ">" + "a" + std::to_string(j);
+            break;
+        }
+        case '=':
+        {
+            returnMe = "a" + std::to_string(i) + "=" + "a" + std::to_string(j);
             break;
         }
         }
@@ -150,7 +90,37 @@ private:
         }
         return returnChar;
     }
+
+    void compareOneToAll(int index)
+    {
+        for(int i = 0; i <this->size; i++)
+        {
+            if(i!=index)
+            {
+                this->compareIndex(index, i);
+            }
+        }
+    }
+    void setArrays(void)
+    {
+        for (int i = 0; i < size;i++)//set both arrays states
+        {
+            array[i] = i;
+            for(int j = 0; j < size; j++)
+            {
+                if(i!=j)
+                {
+                    grid[i*size + j] = '\0';
+                }
+                else
+                {
+                    grid[i*size + j] = '='; 
+                }
+            }
+        }
+    }
 public:
+    
     comparer():comparer(5)
     {
     }
@@ -159,14 +129,8 @@ public:
         this->size = newSize;
         this->grid = new char[this->size*this->size];
         this->array = new int[this->size];
-        for (int i = 0; i < size;i++)//set both arrays states
-        {
-            array[i] = i;
-            for(int j = 0; j < size; j++)
-            {
-                grid[i*size + j] = '\0';
-            }
-        }
+        this->comparisons = 0;
+        this->setArrays();
         this->shuffle();
     }
     ~comparer()
@@ -174,6 +138,12 @@ public:
         delete this->grid;
         delete this->array;
     }
+
+    int getComparisons(void)
+    {
+        return this->comparisons;
+    }
+
     void printArray()
     {
         for(int i = 0; i<this->size; i++)
@@ -203,10 +173,24 @@ public:
         char oneCompareTwo = this->compareInts(this->array[i1], this->array[i2]);
         this->grid[i1*this->size + i2] = oneCompareTwo;
         this->grid[i2*this->size + i1] = this->flipComparisson(oneCompareTwo);
-
+        this->comparisons++;
     }
 
-
+    bool isFullyCompared(void)
+    {
+        bool allCompared = true;
+        for (int i = 0; i < this->size;i++)
+        {
+            for(int j = 0; j < this->size; j++)
+            {
+                if(this->grid[i*this->size+j] == '\0')
+                {
+                    allCompared = false;
+                }
+            }
+        }
+        return allCompared;
+    }
     
 };
 int main(void)
@@ -217,22 +201,6 @@ int main(void)
     cme.compareIndex(0,3);
     cme.printArray();
     cme.printGrid();
-    // int const size = 5;
-    // char grid [size*size];
-    // int orderMe[size];
-    // int comparisons;
+    std::cout << cme.getComparisons();
 
-    // for (int i = 0; i < size;i++)//set both arrays states
-    // {
-    //     orderMe[i] = i;
-    //     for(int j = 0; j < size; j++)
-    //     {
-    //         grid[i*size + j] = '\0';
-    //     }
-    // }
-
-    // grid [3*5] = '<';
-    // shuffle(orderMe, size);
-    // printArray(orderMe, size);
-    // printGrid(grid, size);
 }
