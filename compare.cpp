@@ -124,6 +124,7 @@ private:
         {
             returnChar = '=';
         }
+        return returnChar;
     }
 
     char flipComparisson(char flipMe)//flips < to > or keeps = as =
@@ -168,6 +169,11 @@ public:
         }
         this->shuffle();
     }
+    ~comparer()
+    {
+        delete this->grid;
+        delete this->array;
+    }
     void printArray()
     {
         for(int i = 0; i<this->size; i++)
@@ -194,7 +200,10 @@ public:
 
     void compareIndex(int i1, int i2)
     {
-        this->compareInts(this->array[i1], this->array[i2]);
+        char oneCompareTwo = this->compareInts(this->array[i1], this->array[i2]);
+        this->grid[i1*this->size + i2] = oneCompareTwo;
+        this->grid[i2*this->size + i1] = this->flipComparisson(oneCompareTwo);
+
     }
 
 
@@ -205,6 +214,7 @@ int main(void)
     srand(time(NULL));
 
     comparer cme;
+    cme.compareIndex(0,3);
     cme.printArray();
     cme.printGrid();
     // int const size = 5;
