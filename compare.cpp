@@ -9,8 +9,10 @@ private:
     char *grid;//grid of comparisons that have been done
     int *array;//array of numbers being compared
     int comparisons;//number of comparisons done
-    void shuffle(void)
-    {
+
+//O(n)
+    void shuffle(void)//fisher-yates shuffle to randomize order of numbers
+    {//my favorite algorithm
         for(int i = size; i > 0;i--)
         {
             int swapIndex = rand() % i;
@@ -20,6 +22,13 @@ private:
         }
     }
 
+//O(1)
+    //arguments:
+        //input a character from grid that describes the relationship between i and j
+        //i and j are both indexes for two number in array
+    //returns:
+        //a string describing the relationship between i and j
+        //for printing grid
     std::string getDisplayString(char key, int i, int j)
     {
         std::string returnMe;
@@ -48,7 +57,7 @@ private:
         }
         return returnMe;
     }
-
+    //compares two ints and returns the char describing their relationship
     char compareInts(int num1, int num2)//return the relation char between two ints
     {
         char returnChar = '\0';
@@ -67,6 +76,7 @@ private:
         return returnChar;
     }
 
+//O(1)
     char flipComparisson(char flipMe)//flips < to > or keeps = as =
     {
         char returnChar = '\0';
@@ -91,7 +101,10 @@ private:
         return returnChar;
     }
 
-
+//O(n)
+    //set both grid and array to their default state
+        //for array it first places the numbers in order and then fisher-yates shuffles them
+        //for grid sets all indexes as equal to themselves and the rest to unknowns
     void setArrays(void)
     {
         for (int i = 0; i < size;i++)//set both arrays states
@@ -109,8 +122,11 @@ private:
                 }
             }
         }
+        this->shuffle();
     }
 
+//O(1)
+    //a boolean for whether two indexes have been compared
     bool isUncompared(int i1,int i2)
     {
         bool uncompared = true;
@@ -121,10 +137,15 @@ private:
         return uncompared;
     }
 public:
-    
+
+//O(1)
+    //default constructor is simply size 5
     comparer():comparer(5)
     {
     }
+
+//O(1)
+    //sets up grid and array for whatever size is specified
     comparer(int newSize)
     {
         this->size = newSize;
@@ -132,19 +153,24 @@ public:
         this->array = new int[this->size];
         this->comparisons = 0;
         this->setArrays();
-        this->shuffle();
     }
+
+//O(1)
+    //free memory from grid and array
     ~comparer()
     {
         delete this->grid;
         delete this->array;
     }
 
+//O(1)
+    //returns the number of comparisons done
     int getComparisons(void)
     {
         return this->comparisons;
     }
 
+//O(n)
     void printArray()
     {
         for(int i = 0; i<this->size; i++)
@@ -154,6 +180,7 @@ public:
         std::cout << std::endl;
     }
 
+//O(n)
     void printGrid ()
     {
         for (int i = 0; i < this->size;i++)
@@ -169,6 +196,8 @@ public:
         }
     }
 
+//O(1)
+    //compares two indexes and sets their relation Into Grid
     void compareIndex(int i1, int i2)
     {
         char oneCompareTwo = this->compareInts(this->array[i1], this->array[i2]);
@@ -177,6 +206,8 @@ public:
         this->comparisons++;
     }
 
+//O(n)
+    //checks if the numbers have been fully compared
     bool isFullyCompared(void)
     {
         bool allCompared = true;
@@ -192,6 +223,9 @@ public:
         }
         return allCompared;
     }
+
+//O(n)
+    //compares one index to all the rest
     void compareOneToAll(int index)
     {
         for(int i = 0; i <this->size; i++)
@@ -202,6 +236,9 @@ public:
             }
         }
     }
+
+//O(n^2)
+    //compares all indexes one at a time to every other index
     void bruteForce(void)//for every number compare it to all other uncompared numbers
     {
         for(int i = 0; i < this->size; i++)
@@ -209,13 +246,23 @@ public:
             this->compareOneToAll(i);
         }
     }
+
+    //compare two items next to eachother for every item in the list
+    //for odd list, last one is not compared
+    void comparePairs(void)
+    {
+        for(int i = 0; i < this->size - 1; i+=2)
+        {
+            this->compareIndex(i, i + 1);
+        }
+    }
 };
 int main(void)
 {
     srand(time(NULL));
 
-    comparer cme;
-    cme.bruteForce();
+    comparer cme(9);
+    cme.comparePairs();
 
     //cme.compareIndex(0,3);
     cme.printArray();
