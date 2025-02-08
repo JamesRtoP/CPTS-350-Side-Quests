@@ -2,6 +2,42 @@
 #include <iostream>
 #include <ctime>
 
+
+template <typename t>
+void shuffleArr(t *array, int size)//fisher-yates shuffle to randomize order of numbers
+{//my favorite algorithm
+    for(int i = size; i > 0;i--)
+    {
+        int swapIndex = rand() % i;
+        t temp = array[swapIndex];
+        array[swapIndex] = array[i-1];
+        array[i-1] = temp;
+    }
+}
+
+struct comparison
+{
+    int i1;
+    int i2;
+};
+
+std::ostream& operator<< (std::ostream& stream, const comparison& printME)
+{
+    std::cout << "(" << printME.i1 << "," << printME.i2 << ")";
+    return stream;
+}
+
+
+template <typename t>
+void printArr(t* array, int size)
+{
+    for(int i = 0; i<size; i++)
+    {
+        std::cout << array[i] << ",";
+    }
+    std::cout << std::endl;
+}
+
 class comparer
 {
 private:
@@ -136,6 +172,8 @@ private:
         }
         return uncompared;
     }
+
+    
 public:
 
 //O(1)
@@ -196,6 +234,24 @@ public:
         }
     }
 
+//O(n)
+    //
+    void impliedCompare(int i1,int i2, char oneCompareTwo)
+    {
+        int i1RowIndex = i1*this->size;//the start index for i1 in grid
+        int nextRowIndex = (i1+1)*this->size;//index for the row after i1
+        for(int i = 0; i +  i1RowIndex < nextRowIndex; i++)
+        {
+            if(i != i1 && (grid[i + i1RowIndex] == flipComparisson(oneCompareTwo) || grid[i + i1RowIndex] == '='))
+            {//at this point i is the index of an 
+                grid[i*this->size + i2] = oneCompareTwo;
+                grid[i2*this->size + i] = flipComparisson(oneCompareTwo);
+            }
+        }
+    }
+
+    
+
 //O(1)
     //compares two indexes and sets their relation Into Grid
     void compareIndex(int i1, int i2)
@@ -204,6 +260,7 @@ public:
         this->grid[i1*this->size + i2] = oneCompareTwo;
         this->grid[i2*this->size + i1] = this->flipComparisson(oneCompareTwo);
         this->comparisons++;
+        this->impliedCompare(i1,i2,oneCompareTwo);
     }
 
 //O(n)
@@ -247,6 +304,35 @@ public:
         }
     }
 
+
+//O(n^2)
+    //selects 
+    void randomForce(void)
+    {
+        int numberOfOneSidedComparisons = (this->size * (this->size - 1))/2;
+        comparison* randomComparisons = new comparison[numberOfOneSidedComparisons];//every possible comparion, doesn't need to go both ways or compare with themselves
+        int index = 0;
+        for (int i = 0; i < this->size; i++)//one number from this->Array
+        {
+            for (int j = i+1; j < this->size; j++)//second number from this->array
+            {
+                randomComparisons[index].i1 = i;
+                randomComparisons[index].i2 = j;
+                index++;
+            }
+        }
+        shuffleArr(randomComparisons,numberOfOneSidedComparisons);
+        for(int i = 0; i < numberOfOneSidedComparisons; i++)
+        {
+            if(isUncompared(randomComparisons[i].i1,randomComparisons[i].i2))
+            {
+                this->compareIndex(randomComparisons[i].i1,randomComparisons[i].i2);
+            }
+        }
+        delete randomComparisons;
+    }
+
+//O(n)
     //compare two items next to eachother for every item in the list
     //for odd list, last one is not compared
     void comparePairs(void)
@@ -257,14 +343,26 @@ public:
         }
     }
 };
+
+
+
 int main(void)
 {
     srand(time(NULL));
 
-    comparer cme(9);
-    cme.comparePairs();
+    comparer cme(5);
+    //cme.comparePairs();
 
     //cme.compareIndex(0,3);
+    /*
+    cme.printArray();
+    cme.printGrid();
+    std::cout << cme.getComparisons();
+    */
+    //cme.compareIndex(1,3);
+    //cme.compareIndex(3,4);
+
+    cme.randomForce();
     cme.printArray();
     cme.printGrid();
     std::cout << cme.getComparisons();
