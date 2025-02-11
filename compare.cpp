@@ -38,6 +38,8 @@ void printArr(t* array, int size)
     std::cout << std::endl;
 }
 
+
+
 class comparer
 {
 private:
@@ -342,15 +344,84 @@ public:
             this->compareIndex(i, i + 1);
         }
     }
+
+    //void efficientCompare
+};
+
+class comparerTester
+{
+public:
+    void testRandomCompare(int size, int trials)
+    {
+        int min = -1;
+        int max = -1;
+        int total = 0;
+        for(int i = 0; i < trials; i++)
+        {
+            comparer cme(size);
+            cme.randomForce();
+            int comparisons = cme.getComparisons();
+            if(comparisons > max)
+            {
+                max = comparisons;
+            }
+            if(comparisons < min || i == 0)
+            {
+                min = comparisons;
+            }
+            total += comparisons;
+        }
+        double mean = total/(double)trials;
+        std::cout << "min: " <<min << "\n";
+        std::cout << "max: " <<max << "\n";
+        std::cout << "mean: " <<mean << "\n";
+
+
+    }
+
 };
 
 
+void compare3(int* arr, int size)
+{
+    int* k = arr;
+    int* i = arr;
+    int* j = arr + size-1;
+    while(k<j)
+    {
+        if(*i!=5)
+        {
+            i++;
+        }
+        else if(*j==5)
+        {
+            j--;
+        }
+        else if (i<j)
+        {
+            int temp = *i;
+            *i = *j;
+            *j = temp;
+        }
+        else if(*k != 3)
+        {
+            k++;
+        }
+        else
+        {
+            int temp = *j;
+            *j = *k;
+            *k = temp;
+            j--;
+        }
+    }
+}
 
 int main(void)
 {
     srand(time(NULL));
 
-    comparer cme(5);
+//comparer cme(5);
     //cme.comparePairs();
 
     //cme.compareIndex(0,3);
@@ -362,9 +433,18 @@ int main(void)
     //cme.compareIndex(1,3);
     //cme.compareIndex(3,4);
 
-    cme.randomForce();
-    cme.printArray();
-    cme.printGrid();
-    std::cout << cme.getComparisons();
+    // cme.randomForce();
+    // cme.printArray();
+    // cme.printGrid();
+    // std::cout << cme.getComparisons();
+
+//comparerTester tcme;
+//tcme.testRandomCompare(5,100000);
+
+    int arr[9] = {1,1,1,3,3,3,5,5,5};
+    shuffleArr(arr,9);
+    printArr(arr,9);
+    compare3(arr,9);
+    printArr(arr,9);
 
 }
